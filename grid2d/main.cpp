@@ -118,8 +118,20 @@ int main() {
         window.clear(sf::Color::White);
         window.setView(view);
 
-        for (unsigned int row = 0; row < GRID_ROWS; ++row) {
-            for (unsigned int col = 0; col < GRID_COLS; ++col) {
+        sf::FloatRect viewRect(
+            {view.getCenter().x - view.getSize().x / 2.f,
+            view.getCenter().y - view.getSize().y / 2.f },
+            { view.getSize().x,
+            view.getSize().y }
+        );
+
+        int minRow = std::max<int>(0, static_cast<int>(viewRect.position.y / CELL_SIZE));
+        int maxRow = std::min<int>(static_cast<int>(GRID_ROWS), static_cast<int>((viewRect.position.y + viewRect.size.y) / CELL_SIZE) + 1);
+        int minCol = std::max<int>(0, static_cast<int>(viewRect.position.x / CELL_SIZE));
+        int maxCol = std::min<int>(static_cast<int>(GRID_COLS), static_cast<int>((viewRect.position.x + viewRect.size.x) / CELL_SIZE) + 1);
+
+        for (int row = minRow; row < maxRow; ++row) {
+            for (int col = minCol; col < maxCol; ++col) {
                 if (grid[row][col].sprite) {
                     window.draw(*grid[row][col].sprite);
                 }
