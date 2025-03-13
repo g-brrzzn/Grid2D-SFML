@@ -5,7 +5,7 @@
 #include "Grid.h"
 
 void updateCamera(sf::View& view, float dt) {
-    const float cameraSpeed = 200.f;
+    const float cameraSpeed = 600.f;
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
         view.move(sf::Vector2f(0, -cameraSpeed * dt));
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))

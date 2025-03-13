@@ -12,8 +12,10 @@ std::vector<std::vector<cell>> generateGrid(const TextureData& textureData) {
     for (unsigned int row = 0; row < GRID_ROWS; ++row) {
         for (unsigned int col = 0; col < GRID_COLS; ++col) {
             int cellType = cellTypeDist(gen);
-            int posX = col * CELL_SIZE;
-            int posY = row * CELL_SIZE;
+
+            // Isometric projection formulas
+            int posX = (col - row) * CELL_SIZE / 2;
+            int posY = (col + row) * CELL_SIZE / 4;
 
             if (cellType >= 1) {
                 grid[row][col].initialize(cellType, textureData.textures[cellType],
@@ -25,6 +27,7 @@ std::vector<std::vector<cell>> generateGrid(const TextureData& textureData) {
     return grid;
 }
 
+
 void renderGrid(sf::RenderWindow& window, const sf::View& view, const std::vector<std::vector<cell>>& grid) {
     sf::FloatRect viewRect(
         { view.getCenter().x - view.getSize().x / 2.f,
@@ -33,15 +36,24 @@ void renderGrid(sf::RenderWindow& window, const sf::View& view, const std::vecto
     );
 
     //culling
-    int minRow = std::max<int>(0, static_cast<int>(viewRect.position.y / CELL_SIZE));
-    int maxRow = std::min<int>(static_cast<int>(GRID_ROWS), static_cast<int>((viewRect.position.y + viewRect.size.y) / CELL_SIZE) + 1);
-    int minCol = std::max<int>(0, static_cast<int>(viewRect.position.x / CELL_SIZE));
-    int maxCol = std::min<int>(static_cast<int>(GRID_COLS), static_cast<int>((viewRect.position.x + viewRect.size.x) / CELL_SIZE) + 1);
 
-    for (int row = minRow; row < maxRow; ++row) {
-        for (int col = minCol; col < maxCol; ++col) {
-            if (grid[row][col].sprite)
-                window.draw(*grid[row][col].sprite);
+    for (int row = 0; row < GRID_ROWS; ++row) {
+        for (int col = 0; col < GRID_COLS; ++col) {
+            
+            int posX = (col - row) * CELL_SIZE / 2;
+            int posY = (col + row) * CELL_SIZE / 4;
+
+            
+            if (posX - viewRect.position.x + CELL_SIZE > 0 &&  
+                posX - viewRect.position.x < viewRect.size.x && 
+                posY - viewRect.position.y + CELL_SIZE > 0 && 
+                posY - viewRect.position.y < viewRect.size.y) {
+
+             
+                if (grid[row][col].sprite) {
+                    window.draw(*grid[row][col].sprite);
+                }
+            }
         }
     }
 }
